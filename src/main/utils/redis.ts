@@ -1,5 +1,5 @@
+import { FastifyRedis } from "@fastify/redis";
 import { FastifyInstance } from "fastify";
-import { FastifyRedis } from "fastify-redis";
 
 export interface RedisService {
     getClient: () => Promise<FastifyRedis>;

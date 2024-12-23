@@ -4,8 +4,9 @@ dotenv.config();
 
 export const config = {
     enviroment: process.env.NODE_ENV || "development",
-    port: process.env.PORT || 3000,
-    redisURL: process.env.REDIS_DB_URL || "localhost:6379",
+    port: Number(process.env.PORT) || 3000,
+    redisHost: process.env.REDIS_DB_HOST || "localhost",
+    redisPort: Number(process.env.REDIS_DB_PORT) || 6379,
     supabaseURL: process.env.SUPABASE_URL || "",
     supabaseKey: process.env.SUPABASE_ANON_KEY || "",
     nirnrootApiURL:

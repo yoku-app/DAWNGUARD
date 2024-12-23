@@ -1,8 +1,8 @@
 "use strict";
 
+import Cors from "@fastify/cors";
+import Redis from "@fastify/redis";
 import Fastify from "fastify";
-import Cors from "fastify-cors";
-import Redis from "fastify-redis";
 import { config } from "./config";
 import { routeInit } from "./routes/routes";
 
@@ -10,7 +10,7 @@ const initServer = async () => {
     // Initialise Core Server Settings
     const app = Fastify();
     app.register(Cors, { origin: "*" });
-    app.register(Redis, { host: config.redisURL });
+    app.register(Redis, { host: config.redisHost, port: config.redisPort });
 
     // Register Routes
     await routeInit(app);
@@ -23,3 +23,5 @@ const initServer = async () => {
         process.exit(1);
     }
 };
+
+initServer();

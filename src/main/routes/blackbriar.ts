@@ -3,9 +3,9 @@ import { config } from "../config";
 
 const API_URL = config.nirnrootApiURL;
 
-export const userServiceController = async (app: FastifyInstance) => {
+export const financialServiceController = async (app: FastifyInstance) => {
     app.get(
-        "/api/p/user/health",
+        "/api/p/finance/health",
         async (request: FastifyRequest, reply: FastifyReply) => {
             reply.code(200).send({ message: "User Service is healthy" });
         }
