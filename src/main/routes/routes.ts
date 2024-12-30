@@ -1,10 +1,9 @@
 import { FastifyInstance } from "fastify";
 import { validateUserAuthentication } from "../auth";
 import { financialServiceController } from "./blackbriar";
-import { surveyManagementServiceController } from "./colovia";
+import { coreDataManagementService } from "./colovia";
 import { authServiceController } from "./dawnguard";
 import { routeAuthenticationHook } from "./hook";
-import { userServiceController } from "./nirnroot";
 import { surveyDistributorServiceController } from "./ordinator";
 
 export const routeInit = async (app: FastifyInstance) => {
@@ -16,9 +15,8 @@ export const routeInit = async (app: FastifyInstance) => {
     });
 
     // Reguster all the controllers
-    app.register(userServiceController);
     app.register(authServiceController);
     app.register(financialServiceController);
-    app.register(surveyManagementServiceController);
+    app.register(coreDataManagementService);
     app.register(surveyDistributorServiceController);
 };
