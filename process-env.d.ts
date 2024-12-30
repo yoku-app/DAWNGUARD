@@ -10,7 +10,6 @@ declare global {
             REDIS_DB_PORT: string;
             SUPABASE_URL: string;
             SUPABASE_ANON_KEY: string;
-            NIRNROOT_API_KEY: string;
             COLOVIA_API_KEY: string;
             BLACKBRIAR_API_KEY: string;
             ORDINATOR_API_KEY: string;

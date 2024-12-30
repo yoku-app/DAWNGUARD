@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { config } from "../config";
 
-const API_URL = config.nirnrootApiURL;
+const API_URL = config.ordinatorApiURL;
 
 export const surveyDistributorServiceController = async (
     app: FastifyInstance
