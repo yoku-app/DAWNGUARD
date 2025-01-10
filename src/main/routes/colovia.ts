@@ -2,7 +2,6 @@ import axios from "axios";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { config } from "../config";
 import { UserProfile } from "../types/user.interface";
-import { handleServiceResponseError } from "../utils/error";
 
 const API_URL = config.coloviaApiURL;
 
@@ -21,12 +20,9 @@ export const coreDataManagementService = async (app: FastifyInstance) => {
             reply: FastifyReply
         ) => {
             const { userId } = request.params;
-            try {
-                const response = await axios.get(`${API_URL}user/${userId}`);
-                reply.code(response.status).send(response.data);
-            } catch (err: unknown) {
-                handleServiceResponseError(err, reply);
-            }
+
+            const response = await axios.get(`${API_URL}user/${userId}`);
+            reply.code(response.status).send(response.data);
         }
     );
 };

@@ -1,4 +1,5 @@
 export interface UserOnboardingCompletion {
+    core?: Date;
     respondent?: Date;
     creator?: Date;
 }

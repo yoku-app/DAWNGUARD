@@ -14,4 +14,6 @@ export const config = {
         process.env.BLACKBRIAR_API_KEY || "http://localhost:8083/api/",
     ordinatorApiURL:
         process.env.ORDINATOR_API_KEY || "http://localhost:8084/api/",
+    transmuteApiURL:
+        process.env.TRANSMUTE_API_KEY || "http://localhost:8069/api/",
 };
