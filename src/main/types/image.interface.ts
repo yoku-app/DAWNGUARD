@@ -13,7 +13,9 @@ export interface ImageCrop extends Dimension<number> {
 export type ImageType = "jpeg" | "png" | "gif" | "jpg" | "webp";
 
 export interface ImageTransformRequest {
+    image: File;
     resize?: ImageDimensions;
     crop?: ImageCrop;
     format?: ImageType;
 }
+
