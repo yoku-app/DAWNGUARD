@@ -7,6 +7,7 @@ import Fastify from "fastify";
 import { config } from "./config";
 import { handleError } from "./error";
 import { routeInit } from "./routes/routes";
+import { initSwagger } from "./utils/swagger";
 
 const initServer = async () => {
     // Initialise Core Server Settings
@@ -21,6 +22,7 @@ const initServer = async () => {
         limits: { fieldNameSize: 100, fieldSize: 10 * 1024 * 1024 },
     });
 
+    initSwagger(app);
     // Register Routes
     await routeInit(app);
 
