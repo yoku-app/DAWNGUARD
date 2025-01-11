@@ -2,7 +2,8 @@ import axios from "axios";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { config } from "../config";
 import { AuthenticationError } from "../types/error.interface";
-import { UserProfile } from "../types/user.interface";
+// import { UserProfile } from "../types/user.interface";
+import {type ProfileSchema} from '@yoku-app/shared-schemas/dist/profile.schema';
 
 const API_URL = config.coloviaApiURL;
 
