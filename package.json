@@ -15,7 +15,7 @@
     "@fastify/swagger-ui": "^5.2.1",
     "@supabase/supabase-js": "^2.47.3",
     "@types/swagger-schema-official": "^2.0.25",
-    "@yoku-app/shared-schemas": "^1.0.2",
+    "@yoku-app/shared-schemas": "^1.0.0",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "fastify": "^5.1.0",

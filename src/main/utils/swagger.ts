@@ -1,19 +1,43 @@
 import swagger from "@fastify/swagger";
 import swaggerUI from "@fastify/swagger-ui";
 import { FastifyInstance } from "fastify";
-import { type OpenAPIV2 } from "openapi-types";
+import { swaggerInfo } from '../swagger/swagger.info';
+
 import { config } from "../config";
+import { initSwaggerSchemas } from "../swagger/swagger.schema";
+import { swaggerTags } from "../swagger/swagger.tags";
 
 export const initSwagger = (app: FastifyInstance) => {
     // Register Swagger
     app.register(swagger, {
-        swagger: {
+
+        openapi: {
+            openapi: "3.0.0",
             info: swaggerInfo,
-            host: config.hostedURL,
-            schemes: ["http", "https"],
-            consumes: ["application/json"],
-            produces: ["application/json"],
+            servers: [
+                {
+                    url: config.hostedURL,
+                    description: "Production Server"
+                },
+                {
+                    url: "http://localhost:8080",
+                    description: "Local Server"
+                }
+            ],
             tags: swaggerTags,
+            components: {
+                securitySchemes: {
+                    BearerAuth: {
+                        type: 'http',
+                        scheme: 'bearer',
+                        bearerFormat: 'JWT'
+                    }
+                }
+            },
+            externalDocs: {
+                url: 'https://swagger.io',
+                description: 'Find more info here'
+              }
         },
     });
 
@@ -27,38 +51,15 @@ export const initSwagger = (app: FastifyInstance) => {
             deepLinking: false,
         },
         uiHooks: {
-            onRequest: (request, reply, next) => next(),
-            preHandler: (request, reply, next) => next(),
+            onRequest: (_, _2, next) => next(),
+            preHandler: (_, _2, next) => next(),
         },
     });
+
+    // Add Reference to all Schemas for swagger documentation
+    initSwaggerSchemas(app);
 };
 
-const swaggerTags: OpenAPIV2.TagObject[] = [
-    {
-        name: "Transmute",
-        description: "Image Transformation Service",
-    },
-    {
-        name: "Dawnguard",
-        description: "API Gateway / User Authentication + Privilege Service",
-    },
-    {
-        name: "Colovia",
-        description: "Core Application Data Management Service",
-    },
-    {
-        name: "Ordinator",
-        description: "Survey Distribution Service",
-    },
-    {
-        name: "Blackbriar",
-        description: "Financial Management Service",
-    },
-];
 
-const swaggerInfo: OpenAPIV2.InfoObject = {
-    title: "Yoku API Gateway Documentation",
-    description:
-        "API Endpoints for Yoku, All requests are proxied to the respective services",
-    version: "1.0.0",
-};
+
+

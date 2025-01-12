@@ -4,7 +4,7 @@ dotenv.config();
 
 export const config = {
     enviroment: process.env.NODE_ENV || "development",
-    hostedURL: process.env.HOSTED_API_URL || "http://localhost:8081/api/",
+    hostedURL: process.env.HOSTED_API_URL || "http://localhost:8080",
     port: Number(process.env.PORT) || 3000,
     redisHost: process.env.REDIS_DB_HOST || "localhost",
     redisPort: Number(process.env.REDIS_DB_PORT) || 6379,

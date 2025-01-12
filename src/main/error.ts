@@ -40,7 +40,8 @@ export const handleError = (
         return;
     }
 
-    reply.code(500).send({ message: "Internal Server Error" });
+    // If Error is thrown from an unknown source, return a generic error
+    reply.code(500).send("An unexpected error occurred");
 };
 
 const isCustomError = (error: unknown): error is ErrorResponse => {

@@ -1,15 +1,31 @@
+import { type UserProfile } from '@yoku-app/shared-schemas/dist/types/user/profile.schema';
 import axios from "axios";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { config } from "../config";
 import { AuthenticationError } from "../types/error.interface";
-// import { UserProfile } from "../types/user.interface";
-import { type UserProfile } from '@yoku-app/shared-schemas/dist/profile.schema';
+
+
 
 const API_URL = config.coloviaApiURL;
 
 export const coreDataManagementService = async (app: FastifyInstance) => {
     app.get(
         "/api/p/core/health",
+        {
+            schema: {
+                description: "Health Check",
+                tags: ["Colovia"],
+                summary: "Will ping the Colovia service to check if it is responding to incoming requests",
+                response: {
+                    200: {
+                        type: "object",
+                        properties: {
+                            message: { type: "string" },
+                        },
+                    },
+                },
+            }
+        },
         async (request: FastifyRequest, reply: FastifyReply) => {
             reply.code(200).send({ message: "User Service is healthy" });
         }
@@ -17,6 +33,17 @@ export const coreDataManagementService = async (app: FastifyInstance) => {
 
     app.get(
         `/api/p/user/:userId`,
+        {schema: {
+            description: "Fetches a User's Profile",
+        tags: ["Colovia"],
+        summary: "Fetches a User's Profile from the provided User Id, linking from its protected User object",
+        response: {
+            200: {
+                $ref: "UserProfile",
+                },
+            }
+        }},
+
         async (
             request: FastifyRequest<{ Params: Pick<UserProfile, "userId"> }>,
             reply: FastifyReply
@@ -30,6 +57,24 @@ export const coreDataManagementService = async (app: FastifyInstance) => {
 
     app.put(
         `/api/user/`,
+        {
+            schema: {
+                description: "Updates a User's Profile",
+                tags: ["Colovia"],
+                summary: 
+                `Updates a User's Profile, with new values provided in the request body 
+                to be saved over the current version of the user profile`,
+                body: {
+                    $ref: "UserProfile",
+                },
+                response: {
+                    200: {
+                        $ref: "UserProfile",
+                    },
+                },
+                security: [{BearerAuth: []}]
+            }
+        },
         async (
             request: FastifyRequest<{ Body: UserProfile }>,
             reply: FastifyReply
