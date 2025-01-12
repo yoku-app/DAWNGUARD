@@ -3,15 +3,20 @@ import { validateUserAuthentication } from "../auth";
 import { financialServiceController } from "./blackbriar";
 import { coreDataManagementService } from "./colovia";
 import { authServiceController } from "./dawnguard";
-import { routeAuthenticationHook } from "./hook";
+import { routeAuthenticationHook } from "./hooks/auth.hook";
 import { surveyDistributorServiceController } from "./ordinator";
+import { imageTransformationService } from "./transmute";
 
 export const routeInit = async (app: FastifyInstance) => {
-    // Runs User authentication on protected endpoints
-    const authenticationValidation = validateUserAuthentication(app);
+    app;
 
+    // Runs User authentication on protected endpoints
     app.addHook("preHandler", async (request, reply) => {
-        routeAuthenticationHook(authenticationValidation, request, reply);
+        await routeAuthenticationHook(
+            validateUserAuthentication(app),
+            request,
+            reply
+        );
     });
 
     // Reguster all the controllers
@@ -19,4 +24,5 @@ export const routeInit = async (app: FastifyInstance) => {
     app.register(financialServiceController);
     app.register(coreDataManagementService);
     app.register(surveyDistributorServiceController);
+    app.register(imageTransformationService);
 };
