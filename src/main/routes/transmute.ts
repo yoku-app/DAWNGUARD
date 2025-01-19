@@ -30,7 +30,13 @@ export const imageTransformationService = async (app: FastifyInstance) => {
             const headers = parseAxiosHeaders(response.headers);
 
             // Send Returned Image back to client
-            reply.code(response.status).headers(headers).send(response.data);
+            reply
+                .code(response.status)
+                .headers({
+                    ...headers,
+                    "access-control-allow-origin": "*",
+                })
+                .send(response.data);
         }
     );
 };

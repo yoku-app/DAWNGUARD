@@ -14,12 +14,14 @@ const initServer = async () => {
     const app = Fastify();
     // Set Error Handler
     app.setErrorHandler(handleError);
-    app.register(Cors, { origin: "*" });
+    app.register(Cors, {
+        origin: "*",
+    });
     app.register(Redis, { host: config.redisHost, port: config.redisPort });
     app.register(fastifyMultipart, {
         attachFieldsToBody: true,
         // Set file size limit to 10MB
-        limits: { fieldNameSize: 100, fieldSize: 10 * 1024 * 1024 },
+        limits: { fieldNameSize: 100, fileSize: 10 * 1024 * 1024 },
     });
 
     initSwagger(app);

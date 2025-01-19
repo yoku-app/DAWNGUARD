@@ -21,7 +21,7 @@ export const handleError = (
     _: FastifyRequest,
     reply: FastifyReply
 ): void => {
-    console.error(error);
+    console.error(error)
     // If Error is returned from a response sent to a seperate service, return its associated error
     if (axios.isAxiosError(error)) {
         reply.code(error.response?.status ?? 500).send(error.response?.data);
