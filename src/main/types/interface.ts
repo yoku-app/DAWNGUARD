@@ -1,11 +1,6 @@
-export interface FormField{
-    type: 'field';
-    fieldname: string;
-    mimetype: string;
-    encoding: string;
-    value: string
-}
+import { FastifyInstance } from "fastify";
 
-export interface FormFile{
-
+export interface ControllerRouteConfig {
+    app: FastifyInstance;
+    url: string;
 }

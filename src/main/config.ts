@@ -11,6 +11,8 @@ export const config = {
     supabaseURL: process.env.SUPABASE_URL || "",
     supabaseKey: process.env.SUPABASE_ANON_KEY || "",
     coloviaApiURL: process.env.COLOVIA_API_KEY || "http://localhost:8082/api/",
+    guildmasterApiURL:
+        process.env.GUILDMASTER_API_KEY || "http://localhost:8085/api/",
     blackbriarApiURL:
         process.env.BLACKBRIAR_API_KEY || "http://localhost:8083/api/",
     ordinatorApiURL:

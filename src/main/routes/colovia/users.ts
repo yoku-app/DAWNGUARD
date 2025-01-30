@@ -1,40 +1,18 @@
-import { type UserProfile } from "@yoku-app/shared-schemas/dist/types/user/profile.schema";
+import { UserProfile } from "@yoku-app/shared-schemas/dist/types/user/profile";
 import axios from "axios";
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { config } from "../config";
-import { AuthenticationError } from "../types/error.interface";
+import { FastifyReply, FastifyRequest } from "fastify";
+import { AuthenticationError } from "../../types/error.interface";
+import { ControllerRouteConfig } from "../../types/interface";
 
-const API_URL = config.coloviaApiURL;
-
-export const coreDataManagementService = async (app: FastifyInstance) => {
-    app.get(
-        "/api/p/core/health",
-        {
-            schema: {
-                description: "Health Check",
-                tags: ["Colovia"],
-                summary:
-                    "Will ping the Colovia service to check if it is responding to incoming requests",
-                response: {
-                    200: {
-                        type: "object",
-                        properties: {
-                            message: { type: "string" },
-                        },
-                    },
-                },
-            },
-        },
-        async (request: FastifyRequest, reply: FastifyReply) => {
-            reply.code(200).send({ message: "User Service is healthy" });
-        }
-    );
+export const coloviaUserControllerRoutes = async (
+    config: ControllerRouteConfig
+): Promise<void> => {
+    const { app, url } = config;
 
     app.get(
         `/api/p/user/id/:userId`,
         {
             schema: {
-                description: "Fetches a User's Profile",
                 tags: ["Colovia"],
                 summary:
                     "Fetches a User's Profile from the provided User Id, linking from its protected User object",
@@ -52,16 +30,14 @@ export const coreDataManagementService = async (app: FastifyInstance) => {
         ) => {
             const { userId } = request.params;
 
-            const response = await axios.get(`${API_URL}user/id/${userId}`);
+            const response = await axios.get(`${url}user/id/${userId}`);
             reply.code(response.status).send(response.data);
         }
     );
-
     app.get(
         `/api/p/user/email/:email`,
         {
             schema: {
-                description: "Fetches a User's Profile",
                 tags: ["Colovia"],
                 summary:
                     "Fetches a User's Profile from the provided User email, linking from its protected User object",
@@ -79,7 +55,34 @@ export const coreDataManagementService = async (app: FastifyInstance) => {
         ) => {
             const { email } = request.params;
 
-            const response = await axios.get(`${API_URL}user/email/${email}`);
+            const response = await axios.get(`${url}user/email/${email}`);
+            reply.code(response.status).send(response.data);
+        }
+    );
+
+    app.get(
+        `/api/user/current/`,
+        {
+            schema: {
+                tags: ["Colovia"],
+                summary:
+                    "Fetches the current User's Profile from the JWT token provided in the request",
+                response: {
+                    200: {
+                        $ref: "UserProfile",
+                    },
+                },
+                security: [{ BearerAuth: [] }],
+            },
+        },
+        async (request: FastifyRequest, reply: FastifyReply) => {
+            if (!request.user)
+                throw new AuthenticationError(
+                    "Authentication required to perform this action"
+                );
+
+            const { id } = request.user;
+            const response = await axios.get(`${url}user/id/${id}`);
             reply.code(response.status).send(response.data);
         }
     );
@@ -88,7 +91,6 @@ export const coreDataManagementService = async (app: FastifyInstance) => {
         `/api/user/`,
         {
             schema: {
-                description: "Updates a User's Profile",
                 tags: ["Colovia"],
                 summary: `Updates a User's Profile, with new values provided in the request body 
                 to be saved over the current version of the user profile`,
@@ -124,7 +126,7 @@ export const coreDataManagementService = async (app: FastifyInstance) => {
                     "You are not authorised to edit another user"
                 );
 
-            const response = await axios.put(`${API_URL}user/`, user);
+            const response = await axios.put(`${url}user/`, user);
             reply.code(response.status).send(response.data);
         }
     );

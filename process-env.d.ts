@@ -15,6 +15,7 @@ declare global {
             BLACKBRIAR_API_KEY: string;
             ORDINATOR_API_KEY: string;
             TRANSMUTE_API_KEY: string;
+            GUILDMASTER_API_KEY: string;
         }
     }
 }
