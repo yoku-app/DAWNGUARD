@@ -1,6 +1,7 @@
 import { UserProfile } from "@yoku-app/shared-schemas/dist/types/user/profile";
 import axios from "axios";
 import { FastifyReply, FastifyRequest } from "fastify";
+import { schemaMappings } from "../../swagger/swagger.references";
 import { AuthenticationError } from "../../types/error.interface";
 import { ControllerRouteConfig } from "../../types/interface";
 
@@ -8,7 +9,6 @@ export const coloviaUserControllerRoutes = async (
     config: ControllerRouteConfig
 ): Promise<void> => {
     const { app, url } = config;
-
     app.get(
         `/api/p/user/id/:userId`,
         {
@@ -18,7 +18,7 @@ export const coloviaUserControllerRoutes = async (
                     "Fetches a User's Profile from the provided User Id, linking from its protected User object",
                 response: {
                     200: {
-                        $ref: "UserProfile",
+                        $ref: schemaMappings["UserProfile"],
                     },
                 },
             },
@@ -43,7 +43,7 @@ export const coloviaUserControllerRoutes = async (
                     "Fetches a User's Profile from the provided User email, linking from its protected User object",
                 response: {
                     200: {
-                        $ref: "UserProfile",
+                        $ref: schemaMappings["UserProfile"],
                     },
                 },
             },
@@ -69,7 +69,7 @@ export const coloviaUserControllerRoutes = async (
                     "Fetches the current User's Profile from the JWT token provided in the request",
                 response: {
                     200: {
-                        $ref: "UserProfile",
+                        $ref: schemaMappings["UserProfile"],
                     },
                 },
                 security: [{ BearerAuth: [] }],
@@ -95,11 +95,11 @@ export const coloviaUserControllerRoutes = async (
                 summary: `Updates a User's Profile, with new values provided in the request body 
                 to be saved over the current version of the user profile`,
                 body: {
-                    $ref: "UserProfile",
+                    $ref: schemaMappings["UserProfile"],
                 },
                 response: {
                     200: {
-                        $ref: "UserProfile",
+                        $ref: schemaMappings["UserProfile"],
                     },
                 },
                 security: [{ BearerAuth: [] }],

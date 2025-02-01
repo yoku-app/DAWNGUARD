@@ -1,6 +1,8 @@
-import { Organisation } from "@yoku-app/shared-schemas/dist/types/organisation/organisation";
+import { OrganisationDTO } from "@yoku-app/shared-schemas/dist/types/organisation/dto/organisation-dto";
+
 import axios from "axios";
 import { FastifyReply, FastifyRequest } from "fastify";
+import { schemaMappings } from "../../swagger/swagger.references";
 import { AuthenticationError } from "../../types/error.interface";
 import { ControllerRouteConfig } from "../../types/interface";
 
@@ -17,13 +19,13 @@ export const guildmasterOrganisationControllerRoutes = (
                 summary: "Fetches an Organisation by its associated Id",
                 response: {
                     200: {
-                        $ref: "OrganisationDTO",
+                        $ref: schemaMappings["OrganisationDTO"],
                     },
                 },
             },
         },
         async (
-            request: FastifyRequest<{ Params: Pick<Organisation, "id"> }>,
+            request: FastifyRequest<{ Params: Pick<OrganisationDTO, "id"> }>,
             reply: FastifyReply
         ) => {
             const { id } = request.params;
@@ -43,13 +45,13 @@ export const guildmasterOrganisationControllerRoutes = (
                     "Fetches an Organisation by its associated display name",
                 response: {
                     200: {
-                        $ref: "OrganisationDTO",
+                        $ref: schemaMappings["OrganisationDTO"],
                     },
                 },
             },
         },
         async (
-            request: FastifyRequest<{ Params: Pick<Organisation, "name"> }>,
+            request: FastifyRequest<{ Params: Pick<OrganisationDTO, "name"> }>,
             reply: FastifyReply
         ) => {
             const { name } = request.params;
@@ -69,18 +71,18 @@ export const guildmasterOrganisationControllerRoutes = (
                 summary:
                     "Updates an organisation's details granted correct permissions",
                 body: {
-                    // $ref: "Organisation",
+                    $ref: schemaMappings["OrganisationDTO"],
                 },
                 response: {
                     200: {
-                        $ref: "OrganisationDTO",
+                        $ref: schemaMappings["OrganisationDTO"],
                     },
                 },
                 security: [{ BearerAuth: [] }],
             },
         },
         async (
-            request: FastifyRequest<{ Body: Organisation }>,
+            request: FastifyRequest<{ Body: OrganisationDTO }>,
             reply: FastifyReply
         ) => {
             if (!request.user) {
@@ -99,9 +101,25 @@ export const guildmasterOrganisationControllerRoutes = (
 
     app.post(
         `/api/organisation/`,
-        {},
+        {
+            schema: {
+                description:
+                    "Create a new organisation, requires user authentication, and a valid supporting Industry and User Profile to create the organisation",
+                tags: ["Guildmaster"],
+                summary: "Creates a new organisation",
+                body: {
+                    $ref: schemaMappings["OrganisationDTO"],
+                },
+                response: {
+                    200: {
+                        $ref: schemaMappings["OrganisationDTO"],
+                    },
+                },
+                security: [{ BearerAuth: [] }],
+            },
+        },
         async (
-            request: FastifyRequest<{ Body: Organisation }>,
+            request: FastifyRequest<{ Body: OrganisationDTO }>,
             reply: FastifyReply
         ) => {
             if (!request.user) {
@@ -110,7 +128,6 @@ export const guildmasterOrganisationControllerRoutes = (
                 );
             }
 
-            const { id } = request.user;
             const { body } = request;
 
             const response = await axios.post(`${url}organisation/`, body);
@@ -119,10 +136,21 @@ export const guildmasterOrganisationControllerRoutes = (
     );
 
     app.delete(
-        `/api/organisation/`,
-        {},
+        `/api/organisation/:id`,
+        {
+            schema: {
+                description:
+                    "Delete an organisation, requires user authentication and correct internal organisation permissions to allow organisation deletion capabilities",
+                tags: ["Guildmaster"],
+                summary: "Deletes an organisation granted correct permissions",
+                response: {
+                    204: { type: "null" },
+                },
+                security: [{ BearerAuth: [] }],
+            },
+        },
         async (
-            request: FastifyRequest<{ Params: Pick<Organisation, "id"> }>,
+            request: FastifyRequest<{ Params: Pick<OrganisationDTO, "id"> }>,
             reply: FastifyReply
         ) => {
             if (!request.user) {
@@ -133,7 +161,9 @@ export const guildmasterOrganisationControllerRoutes = (
 
             const { id } = request.params;
 
-            const response = await axios.delete(`${url}organisation/${id}`);
+            const response = await axios.delete(
+                `${url}organisation/${id}/user/${request.user.id}`
+            );
             reply.code(response.status).send(response.data);
         }
     );
