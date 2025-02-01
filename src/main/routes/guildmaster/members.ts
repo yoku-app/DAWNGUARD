@@ -70,7 +70,7 @@ export const guildmasterMemberControllerRoutes = (
     );
 
     app.delete(
-        `/api/member/user/:userId/organisation/:id`,
+        `/api/member/user/:userId/organisation/:organisationId`,
         {
             schema: {
                 description:
@@ -86,8 +86,7 @@ export const guildmasterMemberControllerRoutes = (
         },
         async (
             request: FastifyRequest<{
-                Params: Pick<UserProfile, "userId"> &
-                    Pick<OrganisationDTO, "id">;
+                Params: { organisationId: string; userId: string };
             }>,
             reply: FastifyReply
         ) => {
@@ -97,7 +96,10 @@ export const guildmasterMemberControllerRoutes = (
                 );
             }
 
-            const { id: organisationId, userId } = request.params;
+            const { organisationId, userId } = request.params;
+
+            validateUUID(organisationId);
+            validateUUID(userId);
 
             const response = await axios.delete(
                 `${url}member/user/${userId}/organisation/${organisationId}/originUserId/${request.user.id}`

@@ -3,8 +3,8 @@ import { OrganisationDTO } from "@yoku-app/shared-schemas/dist/types/organisatio
 import axios from "axios";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { schemaMappings } from "../../swagger/swagger.references";
-import { AuthenticationError } from "../../types/error.interface";
 import { ControllerRouteConfig } from "../../types/interface";
+import { getRequestUserOrThrow, validateUUID } from "../../utils/utils";
 
 export const guildmasterOrganisationControllerRoutes = (
     config: ControllerRouteConfig
@@ -29,8 +29,7 @@ export const guildmasterOrganisationControllerRoutes = (
             reply: FastifyReply
         ) => {
             const { id } = request.params;
-            console.log(id);
-
+            validateUUID(id);
             const response = await axios.get(`${url}organisation/id/${id}`);
             reply.code(response.status).send(response.data);
         }
@@ -85,13 +84,7 @@ export const guildmasterOrganisationControllerRoutes = (
             request: FastifyRequest<{ Body: OrganisationDTO }>,
             reply: FastifyReply
         ) => {
-            if (!request.user) {
-                throw new AuthenticationError(
-                    "Authentication required to perform this action"
-                );
-            }
-
-            const { id } = request.user;
+            const { id } = getRequestUserOrThrow(request);
             const { body } = request;
 
             const response = await axios.put(`${url}organisation/${id}`, body);
@@ -122,12 +115,8 @@ export const guildmasterOrganisationControllerRoutes = (
             request: FastifyRequest<{ Body: OrganisationDTO }>,
             reply: FastifyReply
         ) => {
-            if (!request.user) {
-                throw new AuthenticationError(
-                    "Authentication required to perform this action"
-                );
-            }
-
+            // Simply throw if unauthenticated request
+            getRequestUserOrThrow(request);
             const { body } = request;
 
             const response = await axios.post(`${url}organisation/`, body);
@@ -153,16 +142,13 @@ export const guildmasterOrganisationControllerRoutes = (
             request: FastifyRequest<{ Params: Pick<OrganisationDTO, "id"> }>,
             reply: FastifyReply
         ) => {
-            if (!request.user) {
-                throw new AuthenticationError(
-                    "Authentication required to perform this action"
-                );
-            }
+            const { id: userId } = getRequestUserOrThrow(request);
 
             const { id } = request.params;
+            validateUUID(id);
 
             const response = await axios.delete(
-                `${url}organisation/${id}/user/${request.user.id}`
+                `${url}organisation/${id}/user/${userId}`
             );
             reply.code(response.status).send(response.data);
         }
