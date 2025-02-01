@@ -29,14 +29,10 @@ export const initSwaggerSchemas = (app: FastifyInstance) => {
             } else if (file.endsWith(".json")) {
                 // If it's a JSON file, require and add the schema
                 const schema = require(fullPath);
-                app.addSchema({
-                    $id: schema.title,
-                    ...schema,
-                });
+                app.addSchema({ ...schema });
             }
         });
     };
 
-    // Start loading schemas from the schemas directory in your package
     loadSchemas(schemasDir);
 };
