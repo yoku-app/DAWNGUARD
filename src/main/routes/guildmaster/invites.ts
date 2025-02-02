@@ -178,7 +178,7 @@ export const guildmasterInvitesControllerRoutes = (
             const { token } = request.params;
 
             const response = await axios.post(
-                `${url}invite/accept/${token}/email/${email}`
+                `${url}invite/reject/${token}/email/${email}`
             );
 
             reply.code(response.status).send(response.data);
@@ -247,6 +247,125 @@ export const guildmasterInvitesControllerRoutes = (
             const response = await axios.get(
                 `${url}invite/organisation/${organisationId}`,
                 { params: { inviteStatus } }
+            );
+
+            reply.code(response.status).send(response.data);
+        }
+    );
+
+    app.get(
+        `/api/invite/user/:userId`,
+        {
+            schema: {
+                description: "Retrieves all incoming invites for a user",
+                tags: ["Guildmaster"],
+                querystring: {
+                    type: "object",
+                    properties: {
+                        inviteStatus: {
+                            type: "string",
+                            enum: [
+                                "PENDING",
+                                "ACCEPTED",
+                                "REJECTED",
+                                "EXPIRED",
+                            ],
+                            description: "Filter invites by status",
+                        },
+                    },
+                    required: [],
+                },
+                params: {
+                    type: "object",
+                    properties: {
+                        userId: {
+                            type: "string",
+                            format: "uuid",
+                            description:
+                                "The ID of the user to get invites for",
+                        },
+                    },
+                    required: ["userId"],
+                },
+                summary: "Get all invites for a user",
+                response: {
+                    200: {
+                        type: "array",
+                        items: {
+                            $ref: schemaMappings["OrganisationInviteDTO"],
+                        },
+                    },
+                },
+                security: [{ BearerAuth: [] }],
+            },
+        },
+        async (
+            request: FastifyRequest<{
+                Params: { userId: string };
+                Querystring: Partial<Pick<OrganisationInvite, "inviteStatus">>;
+            }>,
+            reply: FastifyReply
+        ) => {
+            const { userId } = request.params;
+            const { inviteStatus } = request.query;
+
+            validateUUID(userId);
+
+            const response = await axios.get(`${url}invite/user/${userId}`, {
+                params: { inviteStatus },
+            });
+
+            reply.code(response.status).send(response.data);
+        }
+    );
+
+    app.delete(
+        `/api/invite/organisation/:organisationId/email/:email`,
+        {
+            schema: {
+                description:
+                    "Revokes an active invitation for a user to join an organisation, Requires an invitation that is currently pending to exist, Requires Authentication, and appropriate organisational permissions to remove invites",
+                tags: ["Guildmaster"],
+                params: {
+                    type: "object",
+                    properties: {
+                        organisationId: {
+                            type: "string",
+                            format: "uuid",
+                            description:
+                                "The ID of the organisation to remove the invite from",
+                        },
+                        email: {
+                            type: "string",
+                            format: "email",
+                            description:
+                                "The email address of the user being invited",
+                        },
+                    },
+                    required: ["organisationId", "email"],
+                },
+                summary:
+                    "Revokes a currently pending invitation for a user to join an organisation",
+                response: {
+                    204: {
+                        type: "null",
+                    },
+                },
+                security: [{ BearerAuth: [] }],
+            },
+        },
+        async (
+            request: FastifyRequest<{
+                Params: { organisationId: string; email: string };
+            }>,
+            reply: FastifyReply
+        ) => {
+            const { organisationId, email } = request.params;
+
+            validateUUID(organisationId);
+
+            const response = await axios.delete(
+                `${url}invite/organisation/${organisationId}/email/${email}`
             );
 
             reply.code(response.status).send(response.data);
