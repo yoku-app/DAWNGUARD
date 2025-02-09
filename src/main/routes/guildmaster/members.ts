@@ -97,12 +97,16 @@ export const guildmasterMemberControllerRoutes = (
             }
 
             const { organisationId, userId } = request.params;
-
             validateUUID(organisationId);
             validateUUID(userId);
 
             const response = await axios.delete(
-                `${url}member/user/${userId}/organisation/${organisationId}/originUserId/${request.user.id}`
+                `${url}member/user/${userId}/organisation/${organisationId}`,
+                {
+                    headers: {
+                        "X-User-Id": request.user.id,
+                    },
+                }
             );
 
             reply.code(response.status).send(response.data);

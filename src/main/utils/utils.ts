@@ -10,6 +10,17 @@ export const validateUUID = (uuid: string) => {
     }
 };
 
+/**
+ * Function to find any potential invalid UUIDs in a list of UUIDs,
+ * returning them to appropriately throw an error.
+ *
+ * @param {string[]} uuids      - The list of UUIDs to check for validity.
+ * @returns {string[]}          - The list of invalid UUIDs.
+ */
+export const findInvalidUUids = (uuids: string[]): string[] => {
+    return uuids.filter((uuid) => !validate(uuid));
+};
+
 export const nullIfEmpty = (value?: string): string | null => {
     return value ? value : null;
 };

@@ -17,7 +17,11 @@ const initServer = async () => {
     app.register(Cors, {
         origin: "*",
     });
-    app.register(Redis, { host: config.redisHost, port: config.redisPort });
+    app.register(Redis, {
+        host: config.redisHost,
+        port: config.redisPort,
+        prefix: "dawnguard",
+    });
     app.register(fastifyMultipart, {
         attachFieldsToBody: true,
         // Set file size limit to 10MB

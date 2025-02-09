@@ -87,7 +87,11 @@ export const guildmasterOrganisationControllerRoutes = (
             const { id } = getRequestUserOrThrow(request);
             const { body } = request;
 
-            const response = await axios.put(`${url}organisation/${id}`, body);
+            const response = await axios.put(`${url}organisation/`, body, {
+                headers: {
+                    "X-User-Id": id,
+                },
+            });
             reply.code(response.status).send(response.data);
         }
     );
@@ -143,13 +147,14 @@ export const guildmasterOrganisationControllerRoutes = (
             reply: FastifyReply
         ) => {
             const { id: userId } = getRequestUserOrThrow(request);
-
             const { id } = request.params;
             validateUUID(id);
 
-            const response = await axios.delete(
-                `${url}organisation/${id}/user/${userId}`
-            );
+            const response = await axios.delete(`${url}organisation/${id}`, {
+                headers: {
+                    "X-User-Id": userId,
+                },
+            });
             reply.code(response.status).send(response.data);
         }
     );

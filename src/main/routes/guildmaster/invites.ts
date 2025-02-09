@@ -1,3 +1,4 @@
+import { UserPartialDTO } from "@yoku-app/shared-schemas/dist/types/organisation/dto/organisation-dto";
 import { OrganisationInvite } from "@yoku-app/shared-schemas/dist/types/organisation/invite";
 import axios from "axios";
 import { FastifyReply, FastifyRequest } from "fastify";
@@ -15,20 +16,12 @@ export const guildmasterInvitesControllerRoutes = (
         `/api/invite/organisation/:organisationId/email/:email`,
         {
             schema: {
-                description:
-                    "Creates an active invitation for a user to join an organisation, the invitation is unique to the users email, and will be sent to the given address. Requires Authentication, and appropriate organisational permissions to add new users",
+                description: `Creates an active invitation for a user to join an organisation,
+                     the invitation is unique to the users email, and will be sent to the given address. 
+                     Requires Authentication, and appropriate organisational permissions to add new users`,
                 tags: ["Guildmaster"],
-                querystring: {
-                    type: "object",
-                    properties: {
-                        userId: {
-                            type: "string",
-                            format: "uuid",
-                            description:
-                                "Optional user ID if the invite is associated with an existing user",
-                        },
-                    },
-                    required: [],
+                body: {
+                    $ref: schemaMappings["UserPartialDTO"],
                 },
                 params: {
                     type: "object",
@@ -51,7 +44,7 @@ export const guildmasterInvitesControllerRoutes = (
                 summary: "Invite a user to an organisation by email",
                 response: {
                     200: {
-                        $ref: schemaMappings["OrganisationInviteDTO"],
+                        $ref: schemaMappings["OrgInviteDTO"],
                     },
                 },
                 security: [{ BearerAuth: [] }],
@@ -60,23 +53,25 @@ export const guildmasterInvitesControllerRoutes = (
         async (
             request: FastifyRequest<{
                 Params: { organisationId: string; email: string };
-                Querystring: { userId?: string };
+                Body?: { user?: UserPartialDTO };
             }>,
             reply: FastifyReply
         ) => {
             const { organisationId, email } = request.params;
-            const { userId } = request.query;
 
             // Get Id of the Invitations creator (ie. the user who made this request)
             const { id: creatorId } = getRequestUserOrThrow(request);
 
             validateUUID(organisationId);
-            if (userId) validateUUID(userId);
 
             const response = await axios.post(
-                `${url}invite/organisation/${organisationId}/email/${email}/creator/${creatorId}`,
-                {},
-                { params: { userId } }
+                `${url}invite/organisation/${organisationId}/email/${email}`,
+                request.body,
+                {
+                    headers: {
+                        "X-User-Id": creatorId,
+                    },
+                }
             );
 
             reply.code(response.status).send(response.data);
@@ -87,8 +82,8 @@ export const guildmasterInvitesControllerRoutes = (
         `/api/invite/accept/:token`,
         {
             schema: {
-                description:
-                    "Acceptance of invitation to join an organisation. Requires the unique token generated from the invitation",
+                description: `Acceptance of invitation to join an organisation. 
+                     Requires the unique token generated from the invitation`,
                 tags: ["Guildmaster"],
                 params: {
                     type: "object",
@@ -225,7 +220,7 @@ export const guildmasterInvitesControllerRoutes = (
                     200: {
                         type: "array",
                         items: {
-                            $ref: schemaMappings["OrganisationInviteDTO"],
+                            $ref: schemaMappings["OrgInviteDTO"],
                         },
                     },
                 },
@@ -292,7 +287,7 @@ export const guildmasterInvitesControllerRoutes = (
                     200: {
                         type: "array",
                         items: {
-                            $ref: schemaMappings["OrganisationInviteDTO"],
+                            $ref: schemaMappings["OrgInviteDTO"],
                         },
                     },
                 },
@@ -323,8 +318,9 @@ export const guildmasterInvitesControllerRoutes = (
         `/api/invite/organisation/:organisationId/email/:email`,
         {
             schema: {
-                description:
-                    "Revokes an active invitation for a user to join an organisation, Requires an invitation that is currently pending to exist, Requires Authentication, and appropriate organisational permissions to remove invites",
+                description: `Revokes an active invitation for a user to join an organisation, 
+                    Requires an invitation that is currently pending to exist, 
+                    Requires Authentication, and appropriate organisational permissions to remove invites`,
                 tags: ["Guildmaster"],
                 params: {
                     type: "object",
